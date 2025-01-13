@@ -6,8 +6,7 @@
     },
     "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
       "packages": "mpi-default-bin,libopm-simulators-bin",
-      "ppas": "opm/ppa",
-      
+      "ppas": "opm/ppa"
     }
   }
 }
