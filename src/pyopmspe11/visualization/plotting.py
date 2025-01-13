@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: MIT
-# pylint: disable=R0912
+# pylint: disable=R0912, R0801
 
 """"
 Script to plot the results
@@ -8,6 +8,7 @@ Script to plot the results
 
 import argparse
 import os
+import warnings
 import math as mt
 import numpy as np
 import matplotlib
@@ -16,19 +17,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 font = {"family": "normal", "weight": "normal", "size": 20}
 matplotlib.rc("font", **font)
-plt.rcParams.update(
-    {
-        "text.usetex": True,
-        "font.family": "monospace",
-        "legend.columnspacing": 0.9,
-        "legend.handlelength": 3.5,
-        "legend.fontsize": 15,
-        "lines.linewidth": 4,
-        "axes.titlesize": 20,
-        "axes.grid": True,
-        "figure.figsize": (10, 5),
-    }
-)
 
 SECONDS_IN_YEAR = 31536000.0
 
@@ -62,11 +50,26 @@ def main():
         "'dense_performance', 'dense_sparse', 'performance_sparse', "
         "'dense_performance-spatial', 'dense_performance_sparse', or 'all'",
     )
+    parser.add_argument(
+        "-s",
+        "--showpywarn",
+        default=0,
+        help="Set to 1 to show Python warnings ('0' by default).",
+    )
+    parser.add_argument(
+        "-l",
+        "--latex",
+        default=1,
+        help="Set to 0 to not use LaTeX formatting ('1' by default).",
+    )
     cmdargs = vars(parser.parse_known_args()[0])
+    if int(cmdargs["showpywarn"]) != 1:  # Show or hidde python warnings
+        warnings.warn = lambda *args, **kwargs: None
     dic = {"folders": [cmdargs["folder"].strip()]}
     dic["case"] = cmdargs["deck"].strip()
     dic["generate"] = cmdargs["generate"].strip()
     dic["compare"] = cmdargs["compare"]  # No empty, then the create compare folder
+    dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
     dic["exe"] = os.getcwd()  # Path to the folder of the configuration file
     plot_results(dic)
 
@@ -82,6 +85,19 @@ def plot_results(dic):
         None
 
     """
+    plt.rcParams.update(
+        {
+            "text.usetex": dic["latex"] not in [0],
+            "font.family": "monospace",
+            "legend.columnspacing": 0.9,
+            "legend.handlelength": 3.5,
+            "legend.fontsize": 15,
+            "lines.linewidth": 4,
+            "axes.titlesize": 20,
+            "axes.grid": True,
+            "figure.figsize": (10, 5),
+        }
+    )
     dic["colors"] = [
         "#1f77b4",
         "#ff7f0e",

@@ -7,16 +7,23 @@ Hello world
 ===========
 
 The `examples/hello_world <https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world>`_ folder contains configuration files
-with low grid resolution and shorter injetion times (for initial testing of the framework). For example, by executing:
+with low grid resolution and shorter injection times (for initial testing of the framework). For example, by executing:
 
 .. code-block:: bash
 
     pyopmspe11 -i spe11b.txt -o spe11b -m all -g all -t 5 -r 50,1,15 -w 1
 
-The following is one of the figures generated related to the CO2 mass in the domain over time (i.e., the simulations results from
-the corner-point grid mapped to the equidistance reporting grid of 50 x 15 as defined by the -r flag):
+The following is the figure `spe11b_tco2_2Dmaps`, which shows the CO2 mass in the domain over time (i.e., the simulations results from
+the corner-point grid mapped to the equidistance reporting grid of 50 x 15 as defined by the -r flag). You can
+compare your example results to this figure to evaluate if your example ran correctly:
 
 .. figure:: figs/spe11b_tco2_2Dmaps.png
+
+Using the :ref:`toml` format, the previous run is equivalent to (this requires a Python version of at least 3.11 [due to `tomllib <https://toml.io/en/>`_]):
+
+.. code-block:: bash
+
+    pyopmspe11 -i spe11b.toml -o spe11b -m all -g all -t 5 -r 50,1,15 -w 1
 
 Let us now change the grid type from corner-point to tensor in line 7 of the configuration file.
 Then, we run the simulations and we save the results in a different output folder:

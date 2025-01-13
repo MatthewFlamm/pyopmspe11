@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: MIT
-# pylint: disable=C0302, R0912, R0914
+# pylint: disable=C0302, R0912, R0914, R0801
 
 """"
 Script to write the benchmark data
@@ -8,6 +8,7 @@ Script to write the benchmark data
 
 import os
 import argparse
+import warnings
 import csv
 from io import StringIO
 from shapely.geometry import Polygon
@@ -15,6 +16,9 @@ from rtree import index
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
+from resdata.grid import Grid
+from resdata.resfile import ResdataFile
+from resdata.summary import Summary
 
 try:
     from opm.io.ecl import EclFile as OpmFile
@@ -22,13 +26,7 @@ try:
     from opm.io.ecl import ERst as OpmRestart
     from opm.io.ecl import ESmry as OpmSummary
 except ImportError:
-    print("The Python package opm was not found, using resdata")
-try:
-    from resdata.grid import Grid
-    from resdata.resfile import ResdataFile
-    from resdata.summary import Summary
-except ImportError:
-    print("The resdata Python package was not found, using opm")
+    pass
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
@@ -86,7 +84,15 @@ def main():
         default="resdata",
         help="Using the 'resdata' or python package (resdata by default).",
     )
+    parser.add_argument(
+        "-s",
+        "--showpywarn",
+        default=0,
+        help="Set to 1 to show Python warnings ('0' by default).",
+    )
     cmdargs = vars(parser.parse_known_args()[0])
+    if int(cmdargs["showpywarn"]) != 1:  # Show or hidde python warnings
+        warnings.warn = lambda *args, **kwargs: None
     dig = {"path": cmdargs["path"].strip()}
     dig["case"] = cmdargs["deck"].strip()
     dig["mode"] = cmdargs["generate"].strip()
